@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freida McFadden — Reading Checklist</title>
+<style>
+  :root {
+    --bg: #14121a;
+    --card: #1e1b26;
+    --card-hover: #262230;
+    --accent: #c9184a;
+    --accent-soft: #ff4d6d;
+    --text: #f2eef7;
+    --text-dim: #a8a1b8;
+    --border: #322c3d;
+    --done: #3ddc97;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    background: radial-gradient(circle at top, #201c29, #100e15 70%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    text-align: center;
+    padding: 48px 20px 28px;
+  }
+  header h1 {
+    font-size: 2.4rem;
+    margin: 0 0 6px;
+    letter-spacing: 0.5px;
+  }
+  header .accent {
+    color: var(--accent-soft);
+  }
+  header p {
+    color: var(--text-dim);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .progress-wrap {
+    max-width: 560px;
+    margin: 24px auto 0;
+    padding: 0 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--done));
+    transition: width 0.4s ease;
+  }
+
+  .controls {
+    max-width: 560px;
+    margin: 18px auto 0;
+    padding: 0 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  }
+  .controls button {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .controls button:hover {
+    color: var(--text);
+    border-color: var(--accent-soft);
+  }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 20px 80px;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    margin: 44px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent-soft);
+    letter-spacing: 0.3px;
+  }
+  .section-title:first-of-type { margin-top: 0; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 18px;
+  }
+
+  .book {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .book:hover {
+    transform: translateY(-3px);
+    background: var(--card-hover);
+    border-color: var(--accent-soft);
+  }
+  .book.done {
+    border-color: var(--done);
+  }
+
+  .cover-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: #0e0c13;
+  }
+  .cover-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 1;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+  }
+  .book.done .cover-wrap img {
+    opacity: 0.35;
+    filter: grayscale(60%);
+  }
+
+  .check-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(20, 18, 26, 0.75);
+    border: 2px solid var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: transparent;
+    transition: 0.2s;
+  }
+  .book.done .check-badge {
+    background: var(--done);
+    border-color: var(--done);
+    color: #0e0c13;
+    font-weight: bold;
+  }
+
+  .book-info {
+    padding: 10px 12px 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  }
+  .book-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0 0 4px;
+  }
+  .book.done .book-title {
+    color: var(--text-dim);
+    text-decoration: line-through;
+    text-decoration-color: var(--done);
+  }
+  .book-date {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin: 0;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px 20px 50px;
+    color: var(--text-dim);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 0.75rem;
+  }
+  footer a { color: var(--accent-soft); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Freida <span class="accent">McFadden</span> Reading Checklist</h1>
+  <p>Tap a cover to mark it read. Your progress is saved in this browser.</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="progress-text">0 / 0 read</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+
+<div class="controls">
+  <button id="check-all">Check all</button>
+  <button id="uncheck-all">Reset</button>
+</div>
+
+<main id="main"></main>
+
+<footer>
+  Cover art &copy; Freida McFadden / respective publishers. Data from the official
+  <a href="https://www.freidamcfadden.com/printable-booklist/" target="_blank" rel="noopener">printable booklist</a>.
+</footer>
+
+<script>
+const DATA = [
+  {
+    section: "The Housemaid Series",
+    books: [
+      { title: "The Housemaid", sub: "Book 1", date: "April 26, 2022", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-housemaid.jpg" },
+      { title: "The Housemaid's Secret", sub: "Book 2", date: "February 20, 2023", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-housemaids-secret.jpg" },
+      { title: "The Housemaid's Wedding", sub: "A Short Story", date: "November 4, 2024", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-housemaids-wedding.jpg" },
+      { title: "The Housemaid Is Watching", sub: "Book 3", date: "June 11, 2024", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-housemaid-is-watching.jpg" }
+    ]
+  },
+  {
+    section: "Standalone Thrillers",
+    books: [
+      { title: "The Witch", date: "October 6, 2026", img: "https://www.freidamcfadden.com/wp-content/uploads/2026/07/cover-the-witch.jpg" },
+      { title: "The Divorce", date: "May 26, 2026", img: "https://www.freidamcfadden.com/wp-content/uploads/2026/01/cover-the-divorce.jpg" },
+      { title: "Dear Debbie", date: "January 27, 2026", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-dear-debbie.jpg" },
+      { title: "The Intruder", date: "October 7, 2025", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-intruder.jpg" },
+      { title: "The Tenant", date: "May 6, 2025", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-tenant.jpg" },
+      { title: "The Crash", date: "January 28, 2025", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-crash.jpg" },
+      { title: "The Boyfriend", date: "October 1, 2024", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-boyfriend.jpg" },
+      { title: "The Teacher", date: "February 6, 2024", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-teacher.jpg" },
+      { title: "The Coworker", date: "August 29, 2023", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-coworker.jpg" },
+      { title: "Ward D", date: "May 8, 2023", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-ward-d.jpg" },
+      { title: "Never Lie", date: "September 19, 2022", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-never-lie.jpg" },
+      { title: "The Inmate", date: "June 13, 2022", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-inmate.jpg" },
+      { title: "Do You Remember?", date: "January 10, 2022", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-do-you-remember.jpg" },
+      { title: "Do Not Disturb", date: "September 7, 2021", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-do-not-disturb.jpg" },
+      { title: "The Locked Door", date: "June 1, 2021", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-locked-door.jpg" },
+      { title: "Want to Know a Secret?", date: "January 5, 2021", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-want-to-know-a-secret-2026.jpg" },
+      { title: "One by One", date: "July 13, 2020", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-one-by-one.jpg" },
+      { title: "The Wife Upstairs", date: "March 23, 2020", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-wife-upstairs.jpg" },
+      { title: "The Perfect Son", date: "October 8, 2019", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-perfect-son-new.jpg" },
+      { title: "The Ex", date: "February 18, 2019", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-ex.jpg" },
+      { title: "The Surrogate Mother", date: "October 10, 2018", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-surrogate-mother.jpg" },
+      { title: "Brain Damage", date: "April 30, 2016", img: "https://www.freidamcfadden.com/wp-content/uploads/2026/07/BrainDamage-cover-ebook.jpg" },
+      { title: "Dead Med", date: "June 24, 2024", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-dead-med.jpg" }
+    ]
+  },
+  {
+    section: "Women's Fiction",
+    books: [
+      { title: "The Devil Wears Scrubs", sub: "Dr. Jane McGill Book 1", date: "January 1, 2013", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-devil-wears-scrubs.jpg" },
+      { title: "The Devil You Know", sub: "Dr. Jane McGill Book 2", date: "May 28, 2017", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-devil-you-know.jpg" },
+      { title: "Baby City", sub: "with Kelley Stoddard", date: "April 25, 2015", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-baby-city.jpg" }
+    ]
+  },
+  {
+    section: "Short Stories",
+    books: [
+      { title: "The Gift", date: "December 4, 2022", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-gift.jpg" },
+      { title: "The Widow's Husband's Secret Lie", date: "August 12, 2024", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-the-widows-husbands-secret-lie.jpg" },
+      { title: "Death Row", sub: "Alibis Collection, Book 1", date: "June 1, 2025", img: "https://www.freidamcfadden.com/wp-content/uploads/2025/08/cover-death-row.jpg" },
+      { title: "The Dinner Party", sub: "Pick Your Poison Adventure", date: "April 1, 2026", img: "https://www.freidamcfadden.com/wp-content/uploads/2026/04/cover-the-diner-party.jpg" }
+    ]
+  }
+];
+
+const STORAGE_KEY = "freida-mcfadden-checklist";
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch (e) {
+    return {};
+  }
+}
+function saveState(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {}
+}
+
+let state = loadState();
+
+function safeEncode(str) {
+  // encodeURIComponent leaves ' ( ) * ! unescaped, which can break
+  // out of the single-quoted string in the inline onerror handler.
+  return encodeURIComponent(str).replace(/[!'()*]/g, c =>
+    "%" + c.charCodeAt(0).toString(16).toUpperCase()
+  );
+}
+
+function slug(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function render() {
+  const main = document.getElementById("main");
+  main.innerHTML = "";
+  let total = 0, done = 0;
+
+  DATA.forEach(section => {
+    const h2 = document.createElement("h2");
+    h2.className = "section-title";
+    h2.textContent = section.section;
+    main.appendChild(h2);
+
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    section.books.forEach(book => {
+      total++;
+      const id = slug(book.title);
+      const isDone = !!state[id];
+      if (isDone) done++;
+
+      const card = document.createElement("div");
+      card.className = "book" + (isDone ? " done" : "");
+      card.dataset.id = id;
+
+      card.innerHTML = `
+        <div class="cover-wrap">
+          <img src="${book.img}" alt="Cover of ${book.title}" loading="lazy"
+               onerror="this.onerror=null;this.src='https://placehold.co/300x450/1e1b26/a8a1b8?text=${safeEncode(book.title)}';">
+          <div class="check-badge">&#10003;</div>
+        </div>
+        <div class="book-info">
+          <p class="book-title">${book.title}${book.sub ? " <span style='color:var(--text-dim);font-weight:400;'>&middot; " + book.sub + "</span>" : ""}</p>
+          <p class="book-date">${book.date}</p>
+        </div>
+      `;
+
+      card.addEventListener("click", () => {
+        state[id] = !state[id];
+        saveState(state);
+        render();
+      });
+
+      grid.appendChild(card);
+    });
+
+    main.appendChild(grid);
+  });
+
+  document.getElementById("progress-text").textContent = `${done} / ${total} read`;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById("progress-pct").textContent = pct + "%";
+  document.getElementById("progress-fill").style.width = pct + "%";
+}
+
+document.getElementById("check-all").addEventListener("click", () => {
+  DATA.forEach(section => section.books.forEach(book => {
+    state[slug(book.title)] = true;
+  }));
+  saveState(state);
+  render();
+});
+
+document.getElementById("uncheck-all").addEventListener("click", () => {
+  state = {};
+  saveState(state);
+  render();
+});
+
+render();
+</script>
+
+</body>
+</html>
